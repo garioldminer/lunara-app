@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routers import users, readings, wheel, checkin
-import threading
+import asyncio
 import logging
 import os
 
@@ -23,13 +23,16 @@ app.include_router(checkin.router,  prefix="/api/checkin")
 def health():
     return {"status": "ok", "app": "Lunara API"}
 
-def run_bot():
+@app.on_event("startup")
+async def startup_event():
+    TOKEN = os.getenv("TELEGRAM_TOKEN")
+    if not TOKEN:
+        logging.warning("No TELEGRAM_TOKEN found, bot not started")
+        return
     try:
         from telegram import Update, WebAppInfo, InlineKeyboardButton, InlineKeyboardMarkup
         from telegram.ext import Application, CommandHandler, ContextTypes
-        import asyncio
 
-        TOKEN = os.getenv("TELEGRAM_TOKEN")
         WEBAPP_URL = os.getenv("WEBAPP_URL", "https://lunara-app-pi.vercel.app")
 
         async def start(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
@@ -42,13 +45,9 @@ def run_bot():
 
         bot_app = Application.builder().token(TOKEN).build()
         bot_app.add_handler(CommandHandler("start", start))
-        print("🌙 Lunara Bot is running...")
-        bot_app.run_polling(drop_pending_updates=True)
+        await bot_app.initialize()
+        await bot_app.start()
+        await bot_app.updater.start_polling(drop_pending_updates=True)
+        logging.info("🌙 Lunara Bot is running!")
     except Exception as e:
         logging.error(f"Bot error: {e}")
-
-@app.on_event("startup")
-async def startup_event():
-    if os.getenv("TELEGRAM_TOKEN"):
-        thread = threading.Thread(target=run_bot, daemon=True)
-        thread.start()
