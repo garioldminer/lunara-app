@@ -1,8 +1,10 @@
+// frontend/src/App.jsx
 import { useState, useEffect } from 'react';
 import LoadingScreen from './components/LoadingScreen';
 import { initTelegramApp } from './lib/telegram';
 import Home from './screens/Home';
 import BottomNav from './components/BottomNav';
+import DebugPanel from './components/DebugPanel'; // ← ახალი იმპორტი
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -12,12 +14,35 @@ function App() {
     initTelegramApp();
   }, []);
 
-  if (isLoading) return <LoadingScreen onComplete={() => setIsLoading(false)} />;
+  if (isLoading) {
+    return <LoadingScreen onComplete={() => setIsLoading(false)} />;
+  }
+
+  const renderScreen = () => {
+    switch (currentScreen) {
+      case 'home':
+        return <Home nav={setCurrentScreen} />;
+      // case 'reading': return <Reading nav={setCurrentScreen} />;
+      // case 'paywall': return <Paywall nav={setCurrentScreen} />;
+      // case 'profile': return <Profile nav={setCurrentScreen} />;
+      // case 'wheel': return <Wheel nav={setCurrentScreen} />;
+      // case 'checkin': return <CheckIn nav={setCurrentScreen} />;
+      // case 'history': return <History nav={setCurrentScreen} />;
+      default:
+        return <Home nav={setCurrentScreen} />;
+    }
+  };
 
   return (
-    <div className="min-h-screen pb-24">
-      {currentScreen === 'home' ? <Home nav={setCurrentScreen} /> : <div className="p-10 text-center">Other screens coming soon...</div>}
+    <div className="min-h-screen pb-24 bg-[#06041A] text-[#E8E0FF]">
+      {/* Main Content */}
+      {renderScreen()}
+
+      {/* Bottom Navigation */}
       <BottomNav current={currentScreen} onNavigate={setCurrentScreen} />
+
+      {/* Debug Panel — მხოლოდ დეველოპმენტში ან ?debug=true-ზე */}
+      <DebugPanel />
     </div>
   );
 }
