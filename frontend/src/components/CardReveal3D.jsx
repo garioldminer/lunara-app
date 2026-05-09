@@ -1,7 +1,6 @@
 // frontend/src/components/CardReveal3D.jsx
 import { useRef, useState } from 'react';
 import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
-import { triggerHaptic } from '../lib/telegram';
 
 export default function CardReveal3D({ 
   cardName, 
@@ -51,29 +50,36 @@ export default function CardReveal3D({
   };
 
   const handleClick = () => {
-    triggerHaptic('medium');
-    setFlipped(!flipped);
-    if (!flipped && onReveal) {
-      onReveal();
+    // უსაფრთხოების შემოწმება: onReveal უნდა იყოს ფუნქცია
+    if (!flipped && typeof onReveal === 'function') {
+      try {
+        onReveal();
+      } catch (err) {
+        console.warn('onReveal error:', err);
+      }
     }
+    setFlipped(prev => !prev);
   };
 
-  const handleTouchStart = () => {
-    triggerHaptic('light');
+  const handleTouchStart = (e) => {
+    // მარტივი ვიბრაცია მობილურზე (ნატიური API)
+    if (navigator.vibrate) {
+      navigator.vibrate(10);
+    }
   };
 
   return (
     <div 
       ref={ref}
-      className="relative w-full max-w-sm mx-auto aspect-[3/4] cursor-pointer perspective-1000"
+      className="relative w-full max-w-sm mx-auto aspect-[3/4] cursor-pointer"
+      style={{ perspective: '1000px' }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       onClick={handleClick}
       onTouchStart={handleTouchStart}
-      style={{ perspective: '1000px' }}
     >
       <motion.div
-        className="relative w-full h-full preserve-3d"
+        className="relative w-full h-full"
         style={{ 
           rotateX, 
           rotateY,
@@ -95,7 +101,7 @@ export default function CardReveal3D({
         >
           {/* Shimmer effect */}
           <motion.div
-            className="absolute inset-0 opacity-30"
+            className="absolute inset-0 opacity-30 pointer-events-none"
             style={{
               background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)',
               x: '-100%',
@@ -106,10 +112,10 @@ export default function CardReveal3D({
           
           {/* Decorative border glow */}
           <motion.div 
-            className="absolute inset-0 rounded-2xl"
+            className="absolute inset-0 rounded-2xl pointer-events-none"
             style={{
               background: 'radial-gradient(ellipse at center, rgba(139,111,212,0.2) 0%, transparent 70%)',
-              z: glowZ,
+              transform: `translateZ(${glowZ}px)`,
             }}
           />
           
@@ -129,11 +135,18 @@ export default function CardReveal3D({
             
             {/* Main symbol with parallax */}
             <motion.span 
-              className="text-7xl mb-4 drop-shadow-[0_0_25px_rgba(167,139,250,0.7)]"
-              style={{ transform: `translateZ(${symbolZ}px)` }}
+              className="text-7xl mb-4"
+              style={{ 
+                transform: `translateZ(${symbolZ}px)`,
+                textShadow: '0 0 25px rgba(167,139,250,0.7)'
+              }}
               animate={{ 
                 scale: [1, 1.03, 1],
-                filter: ['drop-shadow(0 0 20px rgba(167,139,250,0.5))', 'drop-shadow(0 0 30px rgba(167,139,250,0.8))', 'drop-shadow(0 0 20px rgba(167,139,250,0.5))']
+                textShadow: [
+                  '0 0 20px rgba(167,139,250,0.5)',
+                  '0 0 30px rgba(167,139,250,0.8)',
+                  '0 0 20px rgba(167,139,250,0.5)'
+                ]
               }}
               transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
             >
@@ -151,12 +164,12 @@ export default function CardReveal3D({
             </p>
             
             {/* Decorative corners */}
-            <div className="absolute top-2 right-2 w-3 h-3 border-t-2 border-r-2 border-[#A78BFA]/40 rounded-tr" />
-            <div className="absolute bottom-2 left-2 w-3 h-3 border-b-2 border-l-2 border-[#A78BFA]/40 rounded-bl" />
+            <div className="absolute top-2 right-2 w-3 h-3 border-t-2 border-r-2 border-[#A78BFA]/40 rounded-tr pointer-events-none" />
+            <div className="absolute bottom-2 left-2 w-3 h-3 border-b-2 border-l-2 border-[#A78BFA]/40 rounded-bl pointer-events-none" />
           </div>
           
           {/* Bottom decorative line */}
-          <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#A78BFA] to-transparent opacity-50" />
+          <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#A78BFA] to-transparent opacity-50 pointer-events-none" />
         </div>
 
         {/* === BACK FACE === */}
@@ -172,7 +185,7 @@ export default function CardReveal3D({
         >
           {/* Subtle pattern */}
           <div 
-            className="absolute inset-0 opacity-5"
+            className="absolute inset-0 opacity-5 pointer-events-none"
             style={{
               backgroundImage: `radial-gradient(circle at 2px 2px, rgba(167,139,250,0.3) 1px, transparent 0)`,
               backgroundSize: '24px 24px',
@@ -211,7 +224,7 @@ export default function CardReveal3D({
           </div>
           
           {/* Bottom decorative line */}
-          <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#8B6FD4] to-transparent opacity-40" />
+          <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#8B6FD4] to-transparent opacity-40 pointer-events-none" />
         </div>
       </motion.div>
       

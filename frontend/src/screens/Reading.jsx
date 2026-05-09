@@ -1,5 +1,6 @@
 // frontend/src/screens/Reading.jsx
 import { useState } from 'react';
+import { motion } from 'framer-motion'; // ← აუცილებელია!
 import CardReveal3D from '../components/CardReveal3D';
 
 export default function Reading({ nav }) {
@@ -44,7 +45,7 @@ export default function Reading({ nav }) {
         />
       </div>
 
-      {/* Interpretation Section (ჩნდება რივეალის შემდეგ) */}
+      {/* Interpretation Section */}
       {isRevealed && (
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
@@ -52,7 +53,6 @@ export default function Reading({ nav }) {
           transition={{ delay: 0.3 }}
           className="px-5 space-y-5"
         >
-          {/* Message */}
           <div className="glass-panel rounded-xl p-5">
             <h3 className="text-sm font-bold text-[#A78BFA] mb-2 uppercase tracking-wider">🔮 The Message</h3>
             <p className="text-[#E8E0FF]/90 leading-relaxed">
@@ -60,7 +60,6 @@ export default function Reading({ nav }) {
             </p>
           </div>
 
-          {/* Path */}
           <div className="glass-panel rounded-xl p-5">
             <h3 className="text-sm font-bold text-[#A78BFA] mb-2 uppercase tracking-wider">✨ Your Path</h3>
             <p className="text-[#E8E0FF]/90 leading-relaxed">
@@ -68,7 +67,6 @@ export default function Reading({ nav }) {
             </p>
           </div>
 
-          {/* Mantra */}
           <div className="bg-gradient-to-r from-[#181440] to-[#0C0928] border border-[#A78BFA]/20 rounded-xl p-5 text-center">
             <p className="text-[#A78BFA]/60 text-xs uppercase tracking-wider mb-2">💫 Tonight's Mantra</p>
             <p className="text-[#E8E0FF] font-serif italic text-lg">
@@ -76,7 +74,6 @@ export default function Reading({ nav }) {
             </p>
           </div>
 
-          {/* Actions */}
           <div className="flex gap-3 pt-2">
             <button className="flex-1 py-3 rounded-xl bg-[#181440] border border-[#A78BFA]/30 text-[#E8E0FF] font-medium hover:bg-[#1a1644] active:scale-[0.98] transition-all">
               📖 Journal
