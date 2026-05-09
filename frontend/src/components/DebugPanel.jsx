@@ -1,7 +1,7 @@
 // frontend/src/components/DebugPanel.jsx
 import { useState, useEffect } from 'react';
 import { WebApp } from '@twa-dev/sdk';
-import { API_URL } from '../lib/api';
+import { API_URL, fetchWithRenderTimeout } from '../lib/api';
 
 export default function DebugPanel() {
   const [isOpen, setIsOpen] = useState(false);
@@ -9,7 +9,6 @@ export default function DebugPanel() {
 
   useEffect(() => {
     runChecks();
-    // ღილაკი მხოლოდ დეველოპმენტში ან ?debug=true-ზე
     const showDebug = import.meta.env.DEV || new URLSearchParams(window.location.search).get('debug') === 'true';
     if (!showDebug) setIsOpen(false);
   }, []);
@@ -24,9 +23,11 @@ export default function DebugPanel() {
         initData: WebApp?.initData ? '✅ Present' : '❌ Missing',
         colorScheme: WebApp?.colorScheme || 'N/A',
       };
-    } catch (e) { results.telegram = { status: '❌ Error', error: e.message }; }
+    } catch (e) { 
+      results.telegram = { status: '❌ Error', error: e.message }; 
+    }
 
-    // 2. Tailwind CSS (შემოწმება: აქვს თუ არა ელემენტს სწორი სტილი)
+    // 2. Tailwind CSS
     try {
       const test = document.createElement('div');
       test.className = 'bg-[#06041A]';
@@ -35,20 +36,24 @@ export default function DebugPanel() {
       const tailwindOk = style.backgroundColor === 'rgb(6, 4, 26)' || style.backgroundColor.includes('06041a');
       document.body.removeChild(test);
       results.tailwind = { status: tailwindOk ? '✅ Working' : '❌ Not Loading' };
-    } catch (e) { results.tailwind = { status: '❌ Error', error: e.message }; }
+    } catch (e) { 
+      results.tailwind = { status: '❌ Error', error: e.message }; 
+    }
 
-    // 3. API კავშირი
+    // 3. API კავშირი — Render-ისთვის ოპტიმიზირებული (45 წამი ტაიმაუთი)
     try {
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 3000);
-      const res = await fetch(`${API_URL}/health`, { signal: controller.signal });
-      clearTimeout(timeout);
+      const result = await fetchWithRenderTimeout('/health');
       results.api = { 
-        status: res.ok ? '✅ Connected' : `❌ ${res.status}`, 
-        url: API_URL 
+        status: '✅ Connected', 
+        url: API_URL,
+        response: result
       };
     } catch (e) { 
-      results.api = { status: '❌ Unreachable', error: e.message, url: API_URL }; 
+      results.api = { 
+        status: '❌ Unreachable', 
+        error: e.message, 
+        url: API_URL 
+      }; 
     }
 
     // 4. გარემო
@@ -118,7 +123,8 @@ export default function DebugPanel() {
                     {checks.api.status}
                   </div>
                   <div className="text-[#E8E0FF]/50 truncate">{checks.api.url}</div>
-                  {checks.api.error && <div className="text-[#FB7185]/80">{checks.api.error}</div>}
+                  {checks.api.error && <div className="text-[#FB7185]/80 text-[9px]">{checks.api.error}</div>}
+                  {checks.api.response && <div className="text-[#5EEAD4]/70 text-[9px]">{JSON.stringify(checks.api.response)}</div>}
                 </div>
               ) : <div className="text-[#FB7185]">Loading...</div>}
             </div>
