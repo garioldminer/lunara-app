@@ -1,5 +1,5 @@
 // frontend/src/components/CardReveal3D.jsx
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react'; // ← დაემატა useEffect
 import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
 
 export default function CardReveal3D({ 
@@ -13,6 +13,27 @@ export default function CardReveal3D({
 }) {
   const ref = useRef(null);
   const [flipped, setFlipped] = useState(isRevealed);
+  
+  // 🔍 დიაგნოსტიკა: კონსოლში ჩაწერა კომპონენტის მონტაჟისას
+  useEffect(() => {
+    console.log('✨ [CardReveal3D] Component MOUNTED with props:', {
+      cardName,
+      cardSymbol, 
+      cardNumber,
+      isReversed,
+      hasDescription: !!description,
+      hasOnReveal: typeof onReveal === 'function'
+    });
+    
+    // ტესტი: DOM ელემენტის შექმნა რომ დავრწმუნდეთ JSX მუშაობს
+    const test = document.createElement('div');
+    test.textContent = 'CardReveal3D is alive!';
+    console.log('✨ [CardReveal3D] DOM test:', test.textContent);
+    
+    return () => {
+      console.log('✨ [CardReveal3D] Component UNMOUNTED');
+    };
+  }, [cardName, cardSymbol, cardNumber, isReversed, description, onReveal]);
   
   // 3D tilt values
   const x = useMotionValue(0);
@@ -50,18 +71,25 @@ export default function CardReveal3D({
   };
 
   const handleClick = () => {
+    console.log('👆 [CardReveal3D] handleClick called, flipped:', flipped);
+    
     // უსაფრთხოების შემოწმება: onReveal უნდა იყოს ფუნქცია
     if (!flipped && typeof onReveal === 'function') {
       try {
+        console.log('👆 [CardReveal3D] Calling onReveal()');
         onReveal();
       } catch (err) {
-        console.warn('onReveal error:', err);
+        console.warn('⚠️ [CardReveal3D] onReveal error:', err);
       }
     }
-    setFlipped(prev => !prev);
+    setFlipped(prev => {
+      console.log('🔄 [CardReveal3D] Setting flipped to:', !prev);
+      return !prev;
+    });
   };
 
   const handleTouchStart = (e) => {
+    console.log('👆 [CardReveal3D] handleTouchStart called');
     // მარტივი ვიბრაცია მობილურზე (ნატიური API)
     if (navigator.vibrate) {
       navigator.vibrate(10);
@@ -78,6 +106,11 @@ export default function CardReveal3D({
       onClick={handleClick}
       onTouchStart={handleTouchStart}
     >
+      {/* 🔍 დიაგნოსტიკა: თუ ეს ჩანს, კომპონენტი რენდერდება */}
+      <div className="absolute -top-6 left-0 right-0 text-center text-[9px] text-[#A78BFA]/40 pointer-events-none">
+        [CardReveal3D rendered]
+      </div>
+      
       <motion.div
         className="relative w-full h-full"
         style={{ 
