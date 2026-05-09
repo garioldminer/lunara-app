@@ -3,8 +3,9 @@ import { useState, useEffect } from 'react';
 import LoadingScreen from './components/LoadingScreen';
 import { initTelegramApp } from './lib/telegram';
 import Home from './screens/Home';
+import Reading from './screens/Reading'; // ← ახალი იმპორტი (განბლოკე)
 import BottomNav from './components/BottomNav';
-import DebugPanel from './components/DebugPanel'; // ← ახალი იმპორტი
+import DebugPanel from './components/DebugPanel';
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -22,7 +23,8 @@ function App() {
     switch (currentScreen) {
       case 'home':
         return <Home nav={setCurrentScreen} />;
-      // case 'reading': return <Reading nav={setCurrentScreen} />;
+      case 'reading': // ← ეს განბლოკე — ახლა მუშაობს!
+        return <Reading nav={setCurrentScreen} />;
       // case 'paywall': return <Paywall nav={setCurrentScreen} />;
       // case 'profile': return <Profile nav={setCurrentScreen} />;
       // case 'wheel': return <Wheel nav={setCurrentScreen} />;
