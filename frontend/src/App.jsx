@@ -1,27 +1,25 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react';
+import LoadingScreen from './components/LoadingScreen';
+import { initTelegramApp } from './lib/telegram';
+import Home from './screens/Home';
+import BottomNav from './components/BottomNav';
 
-// screens
-import Home from './screens/Home.jsx'
-import Reading from './screens/Reading.jsx'
-import Wheel from './screens/Wheel.jsx'
-import CheckIn from './screens/CheckIn.jsx'
-import History from './screens/History.jsx'
-import Profile from './screens/Profile.jsx'
-import Paywall from './screens/Paywall.jsx'
+function App() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [currentScreen, setCurrentScreen] = useState('home');
 
-export default function App() {
-  const [screen, setScreen] = useState('home')
-  const nav = (s) => setScreen(s)
+  useEffect(() => {
+    initTelegramApp();
+  }, []);
+
+  if (isLoading) return <LoadingScreen onComplete={() => setIsLoading(false)} />;
 
   return (
-    <div id="app">
-      {screen === 'home'    && <Home nav={nav} />}
-      {screen === 'reading' && <Reading nav={nav} />}
-      {screen === 'wheel'   && <Wheel nav={nav} />}
-      {screen === 'checkin' && <CheckIn nav={nav} />}
-      {screen === 'history' && <History nav={nav} />}
-      {screen === 'profile' && <Profile nav={nav} />}
-      {screen === 'paywall' && <Paywall nav={nav} />}
+    <div className="min-h-screen pb-24">
+      {currentScreen === 'home' ? <Home nav={setCurrentScreen} /> : <div className="p-10 text-center">Other screens coming soon...</div>}
+      <BottomNav current={currentScreen} onNavigate={setCurrentScreen} />
     </div>
-  )
+  );
 }
+
+export default App;

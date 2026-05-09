@@ -1,17 +1,12 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-body {
-  font-family: sans-serif;
-  background: #0f0f1a;
-  color: #ffffff;
-}
-
-#app {
-  max-width: 430px;
-  margin: 0 auto;
-  min-height: 100vh;
+@layer base {
+  body {
+    @apply bg-[#06041A] text-[#E8E0FF] font-sans overflow-x-hidden;
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior-y: none;
+  }
+  ::-webkit-scrollbar { display: none; }
 }
