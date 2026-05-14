@@ -1,38 +1,31 @@
 // frontend/src/lib/api.js
-export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
-// ფუნქცია რომელიც ელოდება Render-ის "გაღვიძებას"
-export const fetchWithRenderTimeout = async (endpoint, options = {}) => {
-  const url = `${API_URL}${endpoint}`;
-  
-  // Render-ის cold start-ისთვის: 45 წამი პირველ მცდელობაზე
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 45000);
-  
+// ბექენდის მისამართი
+// StackBlitz-ში ბექენდი მუშაობს პორტ 4000-ზე, ფრონტენდი კი 3000-ზე
+const API_BASE = 'http://localhost:4000/api';
+
+export async function fetchDailyCard() {
   try {
-    const response = await fetch(url, {
-      ...options,
-      signal: controller.signal,
-      headers: {
-        'Content-Type': 'application/json',
-        ...options.headers,
-      },
-    });
-    
-    clearTimeout(timeoutId);
-    
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-    
+    const response = await fetch(`${API_BASE}/daily-card`);
+    if (!response.ok) throw new Error('Failed to fetch card');
     return await response.json();
   } catch (error) {
-    clearTimeout(timeoutId);
-    
-    if (error.name === 'AbortError') {
-      throw new Error('Backend is waking up (Render cold start) - please wait ~30s and try again');
-    }
-    
-    throw error;
+    console.error('❌ API Error:', error);
+    // Fallback მონაცემები, თუ API ვერ მუშაობს
+    return {
+      name: "The Star",
+      symbol: "⭐",
+      number: "XVII",
+      description: "The Star arrives tonight like a breath after a long storm."
+    };
   }
-};
+}
+
+export async function checkHealth() {
+  try {
+    const response = await fetch(`${API_BASE}/health`);
+    return await response.json();
+  } catch {
+    return { status: 'offline' };
+  }
+}
