@@ -1,4 +1,5 @@
 /* frontend/src/styles/globals.css */
+@import './loading.css'; /* ← LoadingScreen კომპონენტის სტილები */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap');
 
 :root{
@@ -16,7 +17,7 @@
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--t);font-family:var(--sans);font-size:14px}
 
-/* LOADING */
+/* ══ LEGACY LOADING (ძველი სტილი - შენარჩუნებული თავსებადობისთვის) ══ */
 #ld{position:fixed;inset:0;z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg);transition:opacity 1s ease}
 #ld.out{opacity:0;pointer-events:none}
 .ld-wrap{position:relative;width:120px;height:120px;margin-bottom:28px}
@@ -37,7 +38,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .ld-fill{height:100%;width:0;background:linear-gradient(90deg,var(--p),var(--p2),var(--gold2));animation:ldfill 2.6s cubic-bezier(.4,0,.2,1) forwards}
 @keyframes ldfill{0%{width:0}100%{width:100%}}
 
-/* APP */
+/* ══ APP ══ */
 #app{position:fixed;inset:0;z-index:1;opacity:0;transition:opacity 1s ease;max-width:430px;margin:0 auto}
 #app.show{opacity:1}
 #cosmos{position:absolute;inset:0;pointer-events:none;z-index:0;overflow:hidden}
@@ -45,12 +46,12 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .sp{position:absolute;border-radius:50%;background:#fff;animation:sptwk var(--d) var(--dl,0s) ease-in-out infinite alternate}
 @keyframes sptwk{from{opacity:.05;transform:scale(.6)}to{opacity:var(--op,.5);transform:scale(1.3)}}
 
-/* SCREENS */
+/* ══ SCREENS ══ */
 .scr{position:absolute;inset:0 0 72px 0;z-index:2;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;opacity:0;pointer-events:none;transition:opacity .3s ease,transform .28s cubic-bezier(.4,0,.2,1);transform:scale(.98) translateY(8px)}
 .scr::-webkit-scrollbar{display:none}
 .scr.on{opacity:1;pointer-events:all;transform:none}
 
-/* NAV */
+/* ══ NAV ══ */
 #nav{position:absolute;bottom:0;left:0;right:0;height:72px;z-index:100;padding:0 10px 20px}
 .nav-in{height:100%;background:rgba(6,4,18,.88);backdrop-filter:blur(32px) saturate(200%);border:1px solid var(--border2);border-radius:var(--r3);display:flex;align-items:center;padding:0 4px;box-shadow:0 -2px 28px rgba(0,0,0,.55),inset 0 0 0 .5px rgba(167,139,250,.08)}
 .ni{flex:1;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;border-radius:14px;transition:all .2s;position:relative}
@@ -61,7 +62,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .ni-pip{width:3px;height:3px;border-radius:50%;background:var(--p2);position:absolute;bottom:5px;opacity:0;transition:.2s}
 .ni.on .ni-pip{opacity:1}
 
-/* COMMON */
+/* ══ COMMON ══ */
 .gc{background:var(--glass);backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:var(--r3);overflow:hidden;position:relative;transition:all .2s}
 .gc::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.055),transparent 60%);pointer-events:none;z-index:0}
 .gc:active{transform:scale(.98);border-color:var(--border2)}
@@ -76,7 +77,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
 @keyframes shim{0%{transform:translateX(-100%)}100%{transform:translateX(250%)}}
 
-/* ══ HOME ═ */
+/* ══ HOME ══ */
 .home-wrap{display:flex;flex-direction:column;min-height:100%;padding:0}
 .status-bar{display:flex;align-items:center;justify-content:space-between;padding:50px 16px 0;flex-shrink:0}
 .sb-logo{display:flex;align-items:center;gap:7px}
@@ -149,6 +150,95 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .qi-i{font-size:20px;margin-bottom:3px;display:block;filter:drop-shadow(0 0 5px rgba(167,139,250,.4))}
 .qi-l{font-size:10px;color:var(--t2);font-weight:500}
 
-/* ── დანარჩენი ეკრანების სტილები იდენტურია შენს კოდთან ── */
-/* (Reading, Wheel, CheckIn, History, Profile, Paywall, Modals, Particles) */
-/* დროის დაზოგვისთვის აქ ვტოვებ placeholder-ს. როცა დაადასტურებ რომ Home მუშაობს, დანარჩენსაც ზუსტად ასე ჩავსვამ. */
+/* ══ HOME SCREEN: NEW RICH ANIMATIONS ══ */
+
+/* 🌌 კოსმოსური ფონის ანიმაციები */
+@keyframes nebula-float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(20px, -15px) scale(1.05); }
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.2; transform: scale(1); }
+  50% { opacity: 0.9; transform: scale(1.4); box-shadow: 0 0 12px rgba(255,255,255,0.9); }
+}
+
+@keyframes particle-float {
+  0% { transform: translateY(0) translateX(0); opacity: 0.3; }
+  50% { opacity: 0.8; }
+  100% { transform: translateY(-100vh) translateX(30px); opacity: 0; }
+}
+
+/* 🌙 ორბის ანიმაციები */
+@keyframes orb-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+@keyframes orb-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes orb-shimmer {
+  0%, 100% { filter: drop-shadow(0 0 20px rgba(167,139,250,0.6)); }
+  50% { filter: drop-shadow(0 0 35px rgba(192,132,252,0.9)); }
+}
+
+@keyframes orb-rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes particle-orbit {
+  0%, 100% { opacity: 0.3; transform: rotate(var(--angle)) translateX(55px) scale(0.8); }
+  50% { opacity: 1; transform: rotate(var(--angle)) translateX(65px) scale(1.2); }
+}
+
+/* 🃏 ბარათის ეფექტები */
+@keyframes card-glow-pulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.6; }
+}
+
+@keyframes card-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes sparkle {
+  0%, 100% { opacity: 0.4; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.3); }
+}
+
+/* 📅 ჩეკ-ინის ეფექტები */
+@keyframes checkin-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.15; }
+  50% { transform: scale(1.1); opacity: 0.3; }
+}
+
+/* 👤🔔 სხვა ელემენტები */
+@keyframes avatar-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(139,92,246,0.5); }
+  50% { box-shadow: 0 0 35px rgba(167,139,250,0.9); }
+}
+
+@keyframes notif-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+@keyframes hint-fade {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* 📱 რესპონსიული პარალაქსი */
+@media (max-width: 480px) {
+  .home-screen.cosmic-bg {
+    transform-style: preserve-3d;
+  }
+}
+
+/* ── დანარჩენი ეკრანების სტილები (Reading, Wheel, CheckIn, History, Profile, Paywall, Modals, Particles) ── */
+/* აქ ჩასვი დანარჩენი სტილები შენი პროექტიდან */

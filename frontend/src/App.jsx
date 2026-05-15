@@ -15,11 +15,9 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [currentScreen, setCurrentScreen] = useState('home');
 
+  // ტელეგრამის ინიციალიზაცია (მხოლოდ ერთხელ)
   useEffect(() => {
     initTelegramApp();
-    // შენი ლოადინგის ანიმაციის ტაიმინგი
-    const timer = setTimeout(() => setIsLoading(false), 2600);
-    return () => clearTimeout(timer);
   }, []);
 
   // კოსმოსის ფონის გენერაცია (ვარსკვლავები + ნისლი)
@@ -27,6 +25,7 @@ function App() {
     const cosmos = document.getElementById('cosmos');
     if (!cosmos || cosmos.children.length > 0) return;
     
+    // ვარსკვლავები
     for (let i = 0; i < 70; i++) {
       const s = document.createElement('div');
       s.className = 'sp';
@@ -34,6 +33,7 @@ function App() {
       s.style.cssText = `width:${z}px;height:${z}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${2+Math.random()*5}s;--dl:${Math.random()*5}s;--op:${0.22+Math.random()*0.6}`;
       cosmos.appendChild(s);
     }
+    
     // ნისლის ეფექტები
     [['rgba(107,70,193,1)','500px','500px','-180px','-110px','.17'],['rgba(40,20,130,1)','360px','360px','','','.13']].forEach(([c,w,h,t,l,o], i) => {
       const n = document.createElement('div');
@@ -43,6 +43,7 @@ function App() {
     });
   }, []);
 
+  // ეკრანის რენდერინგი
   const renderScreen = () => {
     switch (currentScreen) {
       case 'home': return <Home onNavigate={setCurrentScreen} />;
@@ -56,7 +57,10 @@ function App() {
     }
   };
 
-  if (isLoading) return <LoadingScreen />;
+  // 🔑 მთავარი ცვლილება: onEnter (არა onComplete!)
+  if (isLoading) {
+    return <LoadingScreen onEnter={() => setIsLoading(false)} />;
+  }
 
   return (
     <div id="app" className="show">
